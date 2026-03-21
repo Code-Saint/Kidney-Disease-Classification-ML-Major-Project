@@ -68,6 +68,8 @@ class Training:
             **dataflow_kwargs
         )
 
+        print("Class indices:", self.train_generator.class_indices)
+
     
     @staticmethod
     def save_model(path: Path, model: tf.keras.Model):
@@ -93,3 +95,15 @@ class Training:
             model=self.model
         )
 
+
+if __name__ == "__main__":
+    from cnnClassifier.config.configuration import ConfigurationManager
+
+    config = ConfigurationManager()
+    training_config = config.get_training_config()
+
+    training = Training(config=training_config)
+
+    training.get_base_model()
+    training.train_valid_generator()   # 👈 THIS WILL PRINT CLASS INDICES
+    training.train()

@@ -19,18 +19,20 @@ class PredictionPipeline:
         test_image = image.load_img(self.filename, target_size=(224, 224))
         test_image = image.img_to_array(test_image)
 
-        # ✅ IMPORTANT (same as training)
+        # normalize (VERY IMPORTANT)
         test_image = test_image / 255.0
 
         # expand dims
         test_image = np.expand_dims(test_image, axis=0)
 
         # prediction
-        result = np.argmax(self.model.predict(test_image), axis=1)
+        pred = self.model.predict(test_image)
+        result = np.argmax(pred, axis=1)
 
+        print("Raw prediction:", pred)
         print("Prediction index:", result)
 
-        # ⚠️ Try BOTH mappings once (see which is correct)
+        # ✅ FINAL CORRECT MAPPING (based on your training output)
         if result[0] == 1:
             prediction = 'Tumor'
         else:

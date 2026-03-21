@@ -10,7 +10,7 @@ class PredictionPipeline:
         
         # ✅ Load model ONLY ONCE
         self.model = load_model(
-            os.path.join("model", "model.h5"),
+            os.path.join("artifacts", "training", "model.h5"),
             compile=False
         )
 

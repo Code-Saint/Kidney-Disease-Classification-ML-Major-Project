@@ -179,15 +179,13 @@ function sendRequest(base64Data){
 				success: function(res){
 					$(".res-part").html("");
 					$(".res-part2").html("");
-
-					console.log(res); // 👈 debug
-
-					// Show prediction
-					$(".res-part").html(
-						"<h4>Prediction: " + res.prediction + "</h4>" +
-						"<p>Confidence: " + (res.confidence * 100).toFixed(2) + "%</p>"
-					);
-
+					try{
+						var imageData = res[1].image;
+						if(imageData.length > 100){
+							if(imageData.length > 10){$(".res-part2").append("<img class='resp-img' src='data:image/jpeg;base64," + imageData + "' alt='' />");}
+						}
+					}catch(e){}
+					$(".res-part").html("<pre>" + JSON.stringify(res[0], undefined, 2) + "</pre>");
 					$("#loading").hide();
 				}
 			});

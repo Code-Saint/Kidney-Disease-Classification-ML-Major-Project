@@ -27,16 +27,14 @@ class PredictionPipeline:
         # Prediction
         pred = self.model.predict(test_image)
 
-        confidence = float(np.max(pred))   # ✅ correct
-        result = np.argmax(pred, axis=1)
+        confidence = float(pred[0][0])
 
-        print("Raw prediction:", pred)
-        print("Class:", result)
+        print("Confidence:", confidence)
 
-        if result[0] == 0:
-            prediction = 'Tumor'
+        if confidence > 0.5:
+            prediction = "Tumor"
         else:
-            prediction = 'Normal'
+            prediction = "Normal"
 
         return {
             "prediction": prediction,

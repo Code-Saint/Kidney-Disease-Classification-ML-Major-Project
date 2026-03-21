@@ -36,13 +36,13 @@ stages:
         - 224
         - 3
         INCLUDE_TOP: false
-        LEARNING_RATE: 0.01
+        LEARNING_RATE: 0.02
         WEIGHTS: imagenet
     outs:
     - path: artifacts/prepare_base_model
       hash: md5
-      md5: db5e77fa73dd4d15cf5a783646457181.dir
-      size: 118054560
+      md5: 52cdc43113b1b3c3b8ac8ae056bd7f2f.dir
+      size: 118073624
       nfiles: 2
   training:
     cmd: python src/cnnClassifier/pipeline/stage_03_model_training.py
@@ -54,8 +54,8 @@ stages:
       nfiles: 465
     - path: artifacts/prepare_base_model
       hash: md5
-      md5: db5e77fa73dd4d15cf5a783646457181.dir
-      size: 118054560
+      md5: 52cdc43113b1b3c3b8ac8ae056bd7f2f.dir
+      size: 118073624
       nfiles: 2
     - path: config/config.yaml
       hash: md5
@@ -69,7 +69,7 @@ stages:
       params.yaml:
         AUGMENTATION: true
         BATCH_SIZE: 16
-        EPOCHS: 1
+        EPOCHS: 3
         IMAGE_SIZE:
         - 224
         - 224
@@ -77,8 +77,8 @@ stages:
     outs:
     - path: artifacts/training/model.h5
       hash: md5
-      md5: a1edc90fa58890855ca59b8c0f04816f
-      size: 59337520
+      md5: 7dd3af16efac28f575635a9b37bfe0cb
+      size: 59551336
   evaluation:
     cmd: python src/cnnClassifier/pipeline/stage_04_model_evaluation.py
     deps:
@@ -89,16 +89,16 @@ stages:
       nfiles: 465
     - path: artifacts/training/model.h5
       hash: md5
-      md5: a1edc90fa58890855ca59b8c0f04816f
-      size: 59337520
+      md5: 7dd3af16efac28f575635a9b37bfe0cb
+      size: 59551336
     - path: config/config.yaml
       hash: md5
       md5: b4b65d6956da078d7e0a360eb4018eac
       size: 588
     - path: src/cnnClassifier/pipeline/stage_04_model_evaluation.py
       hash: md5
-      md5: e5acfe1c4e9e0a3f116bebf9898cb1ee
-      size: 938
+      md5: 3fceb4ac4bd09ba9900e1833534af160
+      size: 936
     params:
       params.yaml:
         BATCH_SIZE: 16
@@ -109,5 +109,5 @@ stages:
     outs:
     - path: scores.json
       hash: md5
-      md5: 5df350113349a34928c05c2ce4bcb685
-      size: 73
+      md5: 817c000bde9568518221d24418a64093
+      size: 74

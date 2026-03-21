@@ -19,7 +19,9 @@ class Training:
         )
 
         self.model.compile(
-            optimizer=tf.keras.optimizers.Adam(),
+            optimizer=tf.keras.optimizers.Adam(
+                learning_rate=self.config.params_learning_rate
+            ),
             loss="categorical_crossentropy",
             metrics=["accuracy"]
         )
@@ -79,14 +81,10 @@ class Training:
 
     
     def train(self):
-        self.steps_per_epoch = self.train_generator.samples // self.train_generator.batch_size
-        self.validation_steps = self.valid_generator.samples // self.valid_generator.batch_size
 
         self.model.fit(
             self.train_generator,
             epochs=self.config.params_epochs,
-            steps_per_epoch=self.steps_per_epoch,
-            validation_steps=self.validation_steps,
             validation_data=self.valid_generator
         )
 

@@ -33,7 +33,7 @@ class PredictionPipeline:
         print("Raw prediction:", pred)
         print("Class:", result)
 
-        if result[0] == 1:
+        if result[0] == 0:
             prediction = 'Tumor'
         else:
             prediction = 'Normal'

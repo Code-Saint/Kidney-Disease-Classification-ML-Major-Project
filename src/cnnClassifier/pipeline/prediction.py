@@ -8,26 +8,32 @@ class PredictionPipeline:
     def __init__(self, filename):
         self.filename = filename
         
-        # ✅ Load model once
+        # ✅ Load model ONLY ONCE
         self.model = load_model(
             os.path.join("model", "model.h5"),
             compile=False
         )
 
     def predict(self):
-        # load model
-        model = load_model(os.path.join("model", "model.h5"))
-
-        imagename = self.filename
-        test_image = image.load_img(imagename, target_size = (224,224))
+        # load image
+        test_image = image.load_img(self.filename, target_size=(224, 224))
         test_image = image.img_to_array(test_image)
-        test_image = np.expand_dims(test_image, axis = 0)
-        result = np.argmax(model.predict(test_image), axis=1)
-        print(result)
 
+        # ✅ IMPORTANT (same as training)
+        test_image = test_image / 255.0
+
+        # expand dims
+        test_image = np.expand_dims(test_image, axis=0)
+
+        # prediction
+        result = np.argmax(self.model.predict(test_image), axis=1)
+
+        print("Prediction index:", result)
+
+        # ⚠️ Try BOTH mappings once (see which is correct)
         if result[0] == 1:
             prediction = 'Tumor'
-            return [{ "image" : prediction}]
         else:
             prediction = 'Normal'
-            return [{ "image" : prediction}]
+
+        return [{"image": prediction}]

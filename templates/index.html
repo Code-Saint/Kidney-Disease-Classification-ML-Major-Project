@@ -185,7 +185,7 @@ function sendRequest(base64Data){
 							if(imageData.length > 10){$(".res-part2").append("<img class='resp-img' src='data:image/jpeg;base64," + imageData + "' alt='' />");}
 						}
 					}catch(e){}
-					$(".res-part").html("<pre>" + JSON.stringify(res[0], undefined, 2) + "</pre>");
+					$(".res-part").html("<h3>Prediction: " + res[0].image + "</h3>");
 					$("#loading").hide();
 				}
 			});

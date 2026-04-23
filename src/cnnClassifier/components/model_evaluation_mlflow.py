@@ -74,12 +74,12 @@ class Evaluation:
                 "accuracy": self.score[1]
             })
 
-            # ✅ Log artifacts (images)
-            if os.path.exists("confusion_matrix.png"):
-                mlflow.log_artifact("confusion_matrix.png")
+            # ✅ Log visualization artifacts
+            if os.path.exists("artifacts/visualizations/confusion_matrix.png"):
+                mlflow.log_artifact("artifacts/visualizations/confusion_matrix.png")
 
-            if os.path.exists("roc_curve.png"):
-                mlflow.log_artifact("roc_curve.png")
+            if os.path.exists("artifacts/visualizations/roc_curve.png"):
+                mlflow.log_artifact("artifacts/visualizations/roc_curve.png")
 
             # ✅ Log model
             if tracking_url_type_store != "file":

@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 from sklearn.metrics import classification_report, confusion_matrix, roc_curve, auc
 
 
@@ -8,6 +9,10 @@ class ModelMetrics:
     def __init__(self, model, generator):
         self.model = model
         self.generator = generator
+
+        # ✅ create visualization folder
+        self.output_dir = "artifacts/visualizations"
+        os.makedirs(self.output_dir, exist_ok=True)
 
     def evaluate(self):
         # Predictions
@@ -28,16 +33,20 @@ class ModelMetrics:
         print("\nConfusion Matrix:\n", cm)
         print("\nClassification Report:\n", report)
 
-        # Plot Confusion Matrix
+        # ✅ Save Confusion Matrix
+        cm_path = os.path.join(self.output_dir, "confusion_matrix.png")
+
         plt.figure(figsize=(5, 5))
         sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
         plt.xlabel("Predicted")
         plt.ylabel("Actual")
         plt.title("Confusion Matrix")
-        plt.savefig("confusion_matrix.png")
+        plt.savefig(cm_path)
         plt.close()
 
-        # ROC Curve (for binary classification)
+        # ✅ Save ROC Curve (binary only)
+        roc_path = os.path.join(self.output_dir, "roc_curve.png")
+
         if y_pred_probs.shape[1] == 2:
             fpr, tpr, _ = roc_curve(y_true, y_pred_probs[:, 1])
             roc_auc = auc(fpr, tpr)
@@ -49,7 +58,7 @@ class ModelMetrics:
             plt.ylabel("True Positive Rate")
             plt.title("ROC Curve")
             plt.legend()
-            plt.savefig("roc_curve.png")
+            plt.savefig(roc_path)
             plt.close()
 
         return cm, report

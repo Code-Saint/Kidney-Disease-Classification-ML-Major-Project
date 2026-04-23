@@ -5,14 +5,6 @@ import mlflow.keras
 from urllib.parse import urlparse
 import os
 
-# ✅ DagsHub integration (handles MLflow + auth automatically)
-import dagshub
-dagshub.init(
-    repo_owner='codeassassin158',
-    repo_name='Kidney-Disease-Classification-ML-Major-Project',
-    mlflow=True
-)
-
 from cnnClassifier.entity.config_entity import EvaluationConfig
 from cnnClassifier.utils.common import save_json
 
@@ -66,6 +58,9 @@ class Evaluation:
 
     def log_into_mlflow(self):
 
+        # ✅ IMPORTANT: set tracking URI (DagsHub)
+        mlflow.set_tracking_uri(self.config.mlflow_uri)
+
         tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
 
         with mlflow.start_run():
@@ -79,11 +74,10 @@ class Evaluation:
                 "accuracy": self.score[1]
             })
 
-            # ✅ Log confusion matrix
+            # ✅ Log artifacts (images)
             if os.path.exists("confusion_matrix.png"):
                 mlflow.log_artifact("confusion_matrix.png")
 
-            # ✅ Log ROC curve
             if os.path.exists("roc_curve.png"):
                 mlflow.log_artifact("roc_curve.png")
 

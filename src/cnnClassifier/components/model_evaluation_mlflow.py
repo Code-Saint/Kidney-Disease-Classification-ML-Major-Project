@@ -1,9 +1,9 @@
+import os
 import tensorflow as tf
 from pathlib import Path
 import mlflow
 import mlflow.keras
 from urllib.parse import urlparse
-import os
 
 from cnnClassifier.entity.config_entity import EvaluationConfig
 from cnnClassifier.utils.common import save_json
@@ -13,12 +13,11 @@ class Evaluation:
     def __init__(self, config: EvaluationConfig):
         self.config = config
 
-    
-    def _valid_generator(self):
+
+    def _test_generator(self):
 
         datagenerator_kwargs = dict(
-            rescale=1./255,
-            validation_split=0.30
+            rescale=1./255
         )
 
         dataflow_kwargs = dict(
@@ -27,13 +26,15 @@ class Evaluation:
             interpolation="bilinear"
         )
 
-        valid_datagenerator = tf.keras.preprocessing.image.ImageDataGenerator(
+        # ✅ FIX: correct test path
+        test_path = os.path.join(self.config.training_data, "test")
+
+        test_datagenerator = tf.keras.preprocessing.image.ImageDataGenerator(
             **datagenerator_kwargs
         )
 
-        self.valid_generator = valid_datagenerator.flow_from_directory(
-            directory=self.config.training_data,
-            subset="validation",
+        self.test_generator = test_datagenerator.flow_from_directory(
+            directory=test_path,
             shuffle=False,
             **dataflow_kwargs
         )
@@ -46,8 +47,8 @@ class Evaluation:
 
     def evaluation(self):
         self.model = self.load_model(self.config.path_of_model)
-        self._valid_generator()
-        self.score = self.model.evaluate(self.valid_generator)
+        self._test_generator()
+        self.score = self.model.evaluate(self.test_generator)
         self.save_score()
 
 
@@ -58,30 +59,19 @@ class Evaluation:
 
     def log_into_mlflow(self):
 
-        # ✅ IMPORTANT: set tracking URI (DagsHub)
         mlflow.set_tracking_uri(self.config.mlflow_uri)
-
         tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
 
         with mlflow.start_run():
 
-            # ✅ Log parameters
             mlflow.log_params(self.config.all_params)
 
-            # ✅ Log metrics
             mlflow.log_metrics({
                 "loss": self.score[0],
                 "accuracy": self.score[1]
             })
 
-            # ✅ Log visualization artifacts
-            if os.path.exists("artifacts/visualizations/confusion_matrix.png"):
-                mlflow.log_artifact("artifacts/visualizations/confusion_matrix.png")
-
-            if os.path.exists("artifacts/visualizations/roc_curve.png"):
-                mlflow.log_artifact("artifacts/visualizations/roc_curve.png")
-
-            # ✅ Log model
+            # log model
             if tracking_url_type_store != "file":
                 mlflow.keras.log_model(
                     self.model,

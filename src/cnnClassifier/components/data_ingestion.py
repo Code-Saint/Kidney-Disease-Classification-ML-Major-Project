@@ -1,47 +1,44 @@
 import os
-import zipfile
-import gdown
+from pathlib import Path
 from cnnClassifier import logger
-from cnnClassifier.utils.common import get_size
-from cnnClassifier.entity.config_entity import (DataIngestionConfig)
-
+from cnnClassifier.entity.config_entity import DataIngestionConfig
 
 
 class DataIngestion:
     def __init__(self, config: DataIngestionConfig):
         self.config = config
+        self.data_path = Path(self.config.unzip_dir)
 
-    
-    def download_file(self)-> str:
-        '''
-        Fetch data from the url
-        '''
-
-        try: 
-            dataset_url = self.config.source_URL
-            zip_download_dir = self.config.local_data_file
-            os.makedirs("artifacts/data_ingestion", exist_ok=True)
-            logger.info(f"Downloading data from {dataset_url} into file {zip_download_dir}")
-
-            file_id = dataset_url.split("/")[-2]
-            prefix = 'https://drive.google.com/uc?/export=download&id='
-            gdown.download(prefix+file_id,zip_download_dir)
-
-            logger.info(f"Downloaded data from {dataset_url} into file {zip_download_dir}")
-
-        except Exception as e:
-            raise e
-        
-    
-
-    def extract_zip_file(self):
+    def download_file(self) -> None:
         """
-        zip_file_path: str
-        Extracts the zip file into the data directory
-        Function returns None
+        Skip downloading. Ensure dataset already exists locally.
         """
-        unzip_path = self.config.unzip_dir
-        os.makedirs(unzip_path, exist_ok=True)
-        with zipfile.ZipFile(self.config.local_data_file, 'r') as zip_ref:
-            zip_ref.extractall(unzip_path)
+        if self._is_data_available():
+            logger.info(f"✅ Using existing dataset at: {self.data_path.resolve()}")
+        else:
+            raise FileNotFoundError(
+                f"❌ Dataset not found at {self.data_path.resolve()}.\n"
+                "Please place your dataset in the correct structure:\n"
+                "artifacts/data_ingestion/train, val, test"
+            )
 
+    def extract_zip_file(self) -> None:
+        """
+        Skip extraction since dataset is already organized.
+        """
+        logger.info("✅ Skipping unzip step (using pre-existing dataset).")
+
+    def _is_data_available(self) -> bool:
+        """
+        Check if train, val, and test folders exist with class subfolders.
+        """
+        required_dirs = ["train", "val", "test"]
+
+        for d in required_dirs:
+            dir_path = self.data_path / d
+            if not dir_path.exists() or not any(dir_path.iterdir()):
+                logger.warning(f"⚠️ Missing or empty folder: {dir_path}")
+                return False
+
+        logger.info("✅ Dataset structure verified (train/val/test found).")
+        return True

@@ -14,10 +14,10 @@ class DataIngestion:
         Skip downloading. Ensure dataset already exists locally.
         """
         if self._is_data_available():
-            logger.info(f"✅ Using existing dataset at: {self.data_path.resolve()}")
+            logger.info(f"Using existing dataset at: {self.data_path.resolve()}")
         else:
             raise FileNotFoundError(
-                f"❌ Dataset not found at {self.data_path.resolve()}.\n"
+                f"Dataset not found at {self.data_path.resolve()}.\n"
                 "Please place your dataset in the correct structure:\n"
                 "artifacts/data_ingestion/train, val, test"
             )
@@ -26,7 +26,7 @@ class DataIngestion:
         """
         Skip extraction since dataset is already organized.
         """
-        logger.info("✅ Skipping unzip step (using pre-existing dataset).")
+        logger.info("Skipping unzip step (using pre-existing dataset).")
 
     def _is_data_available(self) -> bool:
         """
@@ -37,8 +37,8 @@ class DataIngestion:
         for d in required_dirs:
             dir_path = self.data_path / d
             if not dir_path.exists() or not any(dir_path.iterdir()):
-                logger.warning(f"⚠️ Missing or empty folder: {dir_path}")
+                logger.warning(f"Missing or empty folder: {dir_path}")
                 return False
 
-        logger.info("✅ Dataset structure verified (train/val/test found).")
+        logger.info("Dataset structure verified (train/val/test found).")
         return True

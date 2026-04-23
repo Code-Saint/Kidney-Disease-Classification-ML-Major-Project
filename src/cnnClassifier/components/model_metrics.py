@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import os
+from pathlib import Path
 from sklearn.metrics import classification_report, confusion_matrix, roc_curve, auc
 
 
@@ -10,11 +10,14 @@ class ModelMetrics:
         self.model = model
         self.generator = generator
 
-        # ✅ create visualization folder
-        self.output_dir = "artifacts/visualizations"
-        os.makedirs(self.output_dir, exist_ok=True)
+        # ✅ Robust folder creation using Path
+        self.output_dir = Path("artifacts") / "visualizations"
+        self.output_dir.mkdir(parents=True, exist_ok=True)
 
     def evaluate(self):
+        # Debug (optional but useful)
+        print(f"\nSaving visualizations to: {self.output_dir.resolve()}")
+
         # Predictions
         y_pred_probs = self.model.predict(self.generator)
         y_pred = np.argmax(y_pred_probs, axis=1)
@@ -34,7 +37,7 @@ class ModelMetrics:
         print("\nClassification Report:\n", report)
 
         # ✅ Save Confusion Matrix
-        cm_path = os.path.join(self.output_dir, "confusion_matrix.png")
+        cm_path = self.output_dir / "confusion_matrix.png"
 
         plt.figure(figsize=(5, 5))
         sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
@@ -45,7 +48,7 @@ class ModelMetrics:
         plt.close()
 
         # ✅ Save ROC Curve (binary only)
-        roc_path = os.path.join(self.output_dir, "roc_curve.png")
+        roc_path = self.output_dir / "roc_curve.png"
 
         if y_pred_probs.shape[1] == 2:
             fpr, tpr, _ = roc_curve(y_true, y_pred_probs[:, 1])

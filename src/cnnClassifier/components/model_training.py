@@ -14,6 +14,15 @@ class Training:
             self.config.updated_base_model_path
         )
 
+        # ✅ CRITICAL FIX: Recompile model with fresh optimizer
+        self.model.compile(
+            optimizer=tf.keras.optimizers.Adam(
+                learning_rate=self.config.params_learning_rate
+            ),
+            loss="categorical_crossentropy",
+            metrics=["accuracy"]
+        )
+
 
     def train_valid_generator(self):
 

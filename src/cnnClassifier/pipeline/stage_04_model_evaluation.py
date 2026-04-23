@@ -19,7 +19,7 @@ class EvaluationPipeline:
         evaluation.evaluation()
 
         # 👉 Add metrics
-        metrics = ModelMetrics(evaluation.model, evaluation.valid_generator)
+        metrics = ModelMetrics(evaluation.model, evaluation.test_generator)
         metrics.evaluate()
 
         evaluation.save_score()

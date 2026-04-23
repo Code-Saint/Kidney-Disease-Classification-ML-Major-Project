@@ -78,8 +78,8 @@ class Training:
         self.model.fit(
             self.train_generator,
             epochs=self.config.params_epochs,
-            steps_per_epoch=self.steps_per_epoch,
-            validation_steps=self.validation_steps,
+            steps_per_epoch = None,
+            validation_steps = None,
             validation_data=self.valid_generator
         )
 

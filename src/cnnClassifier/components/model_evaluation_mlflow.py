@@ -62,6 +62,13 @@ class Evaluation:
             mlflow.log_metrics(
                 {"loss": self.score[0], "accuracy": self.score[1]}
             )
+
+            mlflow.log_artifact("confusion_matrix.png")
+
+            import os
+            if os.path.exists("roc_curve.png"):
+                mlflow.log_artifact("roc_curve.png")
+                
             # Model registry does not work with file store
             if tracking_url_type_store != "file":
 
